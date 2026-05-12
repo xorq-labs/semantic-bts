@@ -1,0 +1,4 @@
+source_env .envrc.nix-config
+
+# use `use flake` for non-mutable install
+use flake

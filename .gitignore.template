@@ -1,0 +1,6 @@
+.gitignore
+.direnv
+.envrc.secrets
+.envrc.user
+.coverage
+coverage.xml
