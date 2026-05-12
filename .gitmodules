@@ -1,0 +1,3 @@
+[submodule "xorq-catalog-bts"]
+	path = xorq-catalog-bts
+	url = https://github.com/xorq-labs/xorq-catalog-bts
