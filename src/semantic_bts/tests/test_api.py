@@ -11,7 +11,7 @@ from __future__ import annotations
 import pytest
 from xorq.catalog.catalog import Catalog
 
-from semantic_bts.api import ENTRIES, catalog, load
+from semantic_bts.api import _ALIAS_MAP, ENTRIES, catalog, get_exprs, load
 
 
 @pytest.mark.core
@@ -82,3 +82,33 @@ def test_semantic_model_surface():
 )
 def test_aggregate_schemas(alias, expected_cols):
     assert expected_cols <= set(load(alias).schema().names)
+
+
+@pytest.mark.core
+def test_get_exprs_returns_all():
+    exprs = get_exprs()
+    assert isinstance(exprs, dict)
+    assert set(exprs.keys()) == {e.alias for e in ENTRIES}
+    for handle in exprs.values():
+        assert hasattr(handle, "schema")
+
+
+@pytest.mark.core
+@pytest.mark.parametrize("py_name,alias", list(_ALIAS_MAP.items()))
+def test_lazy_import(py_name, alias):
+    import semantic_bts.api as api
+
+    handle = getattr(api, py_name)
+    assert handle is not None
+    assert hasattr(handle, "schema")
+    assert len(handle.schema().names) > 0
+
+
+@pytest.mark.core
+def test_package_reexport():
+    import semantic_bts
+
+    assert hasattr(semantic_bts, "catalog")
+    assert hasattr(semantic_bts, "load")
+    assert hasattr(semantic_bts, "get_exprs")
+    assert hasattr(semantic_bts, "flights")

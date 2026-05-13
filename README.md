@@ -90,17 +90,39 @@ The orchestrator passes `--no-sync` to every `xorq catalog` call, so the
 submodule's git remote is **never** pulled from or pushed to. The remote is
 treated as a pristine starting point.
 
-### Source-install shortcuts
+### Python API
 
-If you `uv sync` / `pip install -e .` this repo, two **very thin `xorq` wrappers**
-land on your `$PATH` — they don't add any functionality, just save typing:
+Expressions are available as lazy imports — no catalog IO until you access one:
 
-```bash
-semantic-bts list      # ~ xorq catalog -p xorq-catalog-bts list --kind
-semantic-bts rebuild   # = python -m semantic_bts.build
+```python
+from semantic_bts import flights, get_exprs, load
+
+# lazy attribute access
+flights.schema()
+flights.limit(5).to_pandas()
+
+# load by alias
+load("flights-by-quarter-carrier").limit(10).to_pandas()
+
+# get all expressions as a dict
+exprs = get_exprs()  # {"flights": <expr>, "semantic-flights": <expr>, ...}
 ```
 
-Anything beyond that — `run`, `tui`, `add`, `remove`, etc. — use the underlying
+### CLI
+
+If you `uv sync` / `pip install -e .` this repo, the `semantic-bts` command
+lands on your `$PATH`:
+
+```bash
+semantic-bts list            # show catalog entries (alias, kind)
+semantic-bts list-exprs      # show Python-importable expression names
+semantic-bts show ALIAS      # show schema and metadata for an entry
+semantic-bts run ALIAS       # execute an expression and print first rows
+semantic-bts run ALIAS -n 20 # limit output to 20 rows
+semantic-bts rebuild         # wipe + rebuild the submodule catalog
+```
+
+For richer catalog ops — `tui`, `add`, `remove`, etc. — use the underlying
 `xorq` CLI directly.
 
 ## Contributing back to the catalog (advanced)
