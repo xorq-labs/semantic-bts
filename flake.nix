@@ -100,5 +100,17 @@
       packages = forAllSystems (system: {
         default = pythonSets.${system}.mkVirtualEnv "semantic-bts-env" workspace.deps.default;
       });
+      apps = forAllSystems (
+        system:
+        let
+          venv = pythonSets.${system}.mkVirtualEnv "semantic-bts-env" workspace.deps.default;
+        in
+        {
+          default = {
+            type = "app";
+            program = "${venv}/bin/semantic-bts";
+          };
+        }
+      );
     };
 }
