@@ -165,8 +165,6 @@ url=git+ssh://git@github.com/xorq-labs/semantic-bts
 nix run $url -- list
 nix run $url -- run flights-by-quarter-carrier -n 5
 
-# run the CLI via uv (needs --python 3.13; pyarrow has no 3.14 wheel)
-uv tool run --isolated --python 3.13 --with $url -- python -m semantic_bts list
 
 # drop into ipython with the package installed
 uv tool run --isolated --python 3.13 --with $url ipython
