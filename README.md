@@ -162,13 +162,13 @@ submodule), you can run it straight from the git URL:
 url=git+ssh://git@github.com/xorq-labs/semantic-bts
 
 # run the package's __main__
-uv tool run --isolated --with $url -- python -m semantic_bts
+uv tool run --isolated --python 3.13 --with $url -- python -m semantic_bts
 
 # run the project script entrypoint via nix
 nix develop --refresh $url --command semantic-bts
 
 # drop into ipython with the package installed
-uv tool run --isolated --with $url ipython
+uv tool run --isolated --python 3.13 --with $url ipython
 
 # drop into a bash shell with the package on PATH (nix)
 nix develop --refresh $url
