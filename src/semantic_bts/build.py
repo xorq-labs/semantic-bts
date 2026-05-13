@@ -66,7 +66,7 @@ def _xorq(*args: str, capture: bool = False) -> subprocess.CompletedProcess[str]
         check=True,
         text=True,
         stdout=subprocess.PIPE if capture else None,
-        stderr=subprocess.STDOUT if capture else None,
+        stderr=subprocess.PIPE if capture else None,
     )
 
 

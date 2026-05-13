@@ -1,4 +1,3 @@
 {
-  "extensions": ["./porq/extensions"],
-  "skills": ["./porq/skills"]
+  "packages": ["../porq"]
 }
