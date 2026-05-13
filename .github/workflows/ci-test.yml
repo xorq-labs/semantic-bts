@@ -23,7 +23,7 @@ permissions:
 
 jobs:
   linux:
-    runs-on: ubuntu-latest
+    runs-on: bigger-runner
     strategy:
       matrix:
         target: [x86_64]
