@@ -1,8 +1,11 @@
 # semantic-bts
-
 A xorq demo project built around a **remote git catalog** of BTS On-Time flights
 data and a [boring-semantic-layer](https://github.com/letsql/boring-semantic-layer)
 model over it.
+
+![Not this BTS](assets/image.png)
+
+
 
 Unlike a typical project that authors its catalog in-tree, here the catalog
 lives in a separate repo and is consumed as a git submodule:
@@ -125,12 +128,13 @@ semantic-bts rebuild         # wipe + rebuild the submodule catalog
 For richer catalog ops — `tui`, `add`, `remove`, etc. — use the underlying
 `xorq` CLI directly.
 
-## Contributing back to the catalog (advanced)
+## Sharing the catalog with others (optional)
 
-The default workflow is local-only — you don't push back to
-`xorq-labs/xorq-catalog-bts`. If you want to publish your own version, fork it
-on GitHub and `git submodule set-url xorq-catalog-bts <your-fork>`; then your
-rebuilds can be committed and pushed inside the submodule.
+The default workflow is entirely local — rebuilds stay on your machine and
+nothing is pushed to `xorq-labs/xorq-catalog-bts`. If you want to share your
+catalog with others, fork the catalog repo on GitHub, point the submodule at
+your fork with `git submodule set-url xorq-catalog-bts <your-fork>`, and push
+from inside the submodule. This is not recommended for most use cases.
 
 ## Using pi.dev with the catalog
 
