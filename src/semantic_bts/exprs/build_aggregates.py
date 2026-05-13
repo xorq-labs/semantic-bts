@@ -1,8 +1,9 @@
-"""Build script: two BSL aggregate catalog entries derived from `semantic-flights`.
+"""Build script: BSL aggregate catalog entries derived from `semantic-flights`.
 
 Top-level bindings:
-  expr_month_od    -- monthly metrics by (origin_state, dest_state)
-  expr_quarter_car -- quarterly metrics by reporting_airline
+  expr_month_od       -- monthly metrics by (origin_state, dest_state)
+  expr_quarter_car    -- quarterly metrics by reporting_airline
+  expr_dow_deststate  -- daily metrics by (day_of_week, dest_state_name)
 """
 
 from xorq.catalog.catalog import Catalog
@@ -31,4 +32,10 @@ expr_quarter_car = model.query(
     dimensions=["quarter", "reporting_airline"],
     measures=MEASURES,
     order_by=[("quarter", "asc"), ("avg_dep_delay", "desc")],
+).to_untagged()
+
+expr_dow_deststate = model.query(
+    dimensions=["day_of_week", "dest_state_name"],
+    measures=MEASURES,
+    order_by=[("day_of_week", "asc"), ("avg_dep_delay", "desc")],
 ).to_untagged()

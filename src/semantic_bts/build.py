@@ -50,7 +50,7 @@ ENTRIES: tuple[Entry, ...] = (
     ),
     Entry(
         "flights-by-dow-deststate",
-        EXPRS_DIR / "build_dow_deststate.py",
+        EXPRS_DIR / "build_aggregates.py",
         "expr_dow_deststate",
     ),
 )
