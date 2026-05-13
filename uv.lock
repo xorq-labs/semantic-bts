@@ -1617,7 +1617,7 @@ wheels = [
 ]
 
 [[package]]
-name = "semantic-bts-demo"
+name = "semantic-bts"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

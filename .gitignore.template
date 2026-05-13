@@ -4,3 +4,14 @@
 .envrc.user
 .coverage
 coverage.xml
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# xorq build artifacts produced by `python -m semantic_bts.build`.
+builds/

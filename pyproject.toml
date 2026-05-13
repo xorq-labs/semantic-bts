@@ -1,5 +1,5 @@
 [project]
-name = "semantic-bts-demo"
+name = "semantic-bts"
 version = "0.1.0"
 description = "Example using boring-samantic-layer & xorq calculate measures with bureau of labor statitstics data."
 requires-python = ">=3.10,<3.14"
@@ -10,8 +10,7 @@ dependencies = [
 ]
 
 [project.scripts]
-semantic-bts-demo = "semantic_bts_demo.cli:cli"
-semantic-bts-demo-function = "semantic_bts_demo.hello:hello"
+semantic-bts = "semantic_bts.cli:cli"
 
 [build-system]
 requires = ["uv_build>=0.9.0,<0.10.0"]
@@ -35,7 +34,7 @@ test = [
 extend-select = ["I", "ICN"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["semantic_bts_demo"]
+known-first-party = ["semantic_bts"]
 section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
 lines-after-imports = 2
 

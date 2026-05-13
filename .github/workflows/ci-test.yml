@@ -27,9 +27,11 @@ jobs:
     strategy:
       matrix:
         target: [x86_64]
-        python-version: ["3.12"]
+        python-version: ["3.13"]
     steps:
       - uses: actions/checkout@v6
+        with:
+          submodules: recursive
       - uses: extractions/setup-just@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

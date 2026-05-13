@@ -69,7 +69,7 @@
         let
           pkgs = nixpkgs.legacyPackages.${system};
           pythonSet = pythonSets.${system}.overrideScope editableOverlay;
-          virtualenv = pythonSet.mkVirtualEnv "semantic-bts-demo-dev-env" workspace.deps.all;
+          virtualenv = pythonSet.mkVirtualEnv "semantic-bts-dev-env" workspace.deps.all;
         in
         {
           default = pkgs.mkShell {
@@ -98,7 +98,7 @@
         pkgs.nixfmt-tree
       );
       packages = forAllSystems (system: {
-        default = pythonSets.${system}.mkVirtualEnv "semantic-bts-demo-env" workspace.deps.default;
+        default = pythonSets.${system}.mkVirtualEnv "semantic-bts-env" workspace.deps.default;
       });
     };
 }

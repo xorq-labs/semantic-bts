@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   release:
-    name: release semantic-bts-demo to TestPyPI
+    name: release semantic-bts to TestPyPI
     runs-on: ubuntu-latest
     environment:
       name: pre-release
