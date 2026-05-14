@@ -282,6 +282,154 @@ print(f"Total rows: {t.count().execute()}")
   });
 
   // -----------------------------------------------------------------------
+  // Tool: bsl_describe — list dimensions and measures of a BSL ExprBuilder
+  //
+  // Replaces the `python -c "... .ls.builder; print(sorted(m.dimensions))"`
+  // bash escape that agents otherwise reach for when discovering what a
+  // semantic model can answer.
+  // -----------------------------------------------------------------------
+  defTool<{ name: string }>({
+    name: "bsl_describe",
+    label: "BSL Describe",
+    description:
+      "List dimensions and measures of a BSL semantic model entry. " +
+      "Use this before `bsl_query` to discover available dims/measures. " +
+      "The entry must be an ExprBuilder backed by boring-semantic-layer.",
+    parameters: Type.Object({
+      name: Type.String({
+        description: "Catalog entry name or alias (BSL ExprBuilder).",
+      }),
+    }),
+    async execute(_id, params, signal) {
+      const script = `
+import json, os
+from xorq.catalog.catalog import Catalog
+cat_path = os.environ.get("XORQ_CATALOG_PATH")
+cat = Catalog.from_repo_path(cat_path) if cat_path else Catalog.from_default()
+m = cat.load(${JSON.stringify(params.name)}).ls.builder
+def _desc(obj):
+    return getattr(obj, "description", None)
+dims = m.get_dimensions()
+meas = m.get_measures()
+print(json.dumps({
+    "name": getattr(m, "name", None),
+    "dimensions": {k: _desc(v) for k, v in dims.items()},
+    "measures":   {k: _desc(v) for k, v in meas.items()},
+}, indent=2, default=str))
+`.trim();
+      const result = await pi.exec("python", ["-c", script], {
+        timeout: TIMEOUT_MUTATE,
+        signal,
+      });
+      if (result.code !== 0) {
+        throw new Error(`bsl_describe failed: ${result.stderr}`);
+      }
+      return {
+        content: [{ type: "text", text: result.stdout }],
+        details: {},
+      };
+    },
+  });
+
+  // -----------------------------------------------------------------------
+  // Tool: bsl_query — run a one-shot semantic query against a BSL model
+  //
+  // Short-circuits the "write build script -> xorq_build -> catalog_add ->
+  // catalog_run" loop for analytical questions whose answer doesn't need
+  // to be persisted in the catalog.
+  // -----------------------------------------------------------------------
+  defTool<{
+    name: string;
+    dimensions?: string[];
+    measures?: string[];
+    order_by?: string[];
+    limit?: number;
+    format?: string;
+  }>({
+    name: "bsl_query",
+    label: "BSL Query",
+    description:
+      "Query a BSL semantic model entry by dimensions/measures and return results. " +
+      "Use this for one-shot analytical questions — no build script needed. " +
+      "Call `bsl_describe` first to discover dims/measures. " +
+      "For a persistent derived entry, use the builder skill flow instead.",
+    parameters: Type.Object({
+      name: Type.String({
+        description: "Catalog entry name or alias (BSL ExprBuilder).",
+      }),
+      dimensions: Type.Optional(
+        Type.Array(Type.String(), {
+          description: "Dimension names to group by.",
+        }),
+      ),
+      measures: Type.Optional(
+        Type.Array(Type.String(), {
+          description: "Measure names to aggregate.",
+        }),
+      ),
+      order_by: Type.Optional(
+        Type.Array(Type.String(), {
+          description: "Sort columns. Format: 'col' (asc) or 'col:desc'.",
+        }),
+      ),
+      limit: Type.Optional(
+        Type.Number({ description: "Limit number of rows returned." }),
+      ),
+      format: Type.Optional(
+        Type.String({
+          description: "Output format: csv or json (default: csv).",
+          enum: ["csv", "json"],
+        }),
+      ),
+    }),
+    async execute(_id, params, signal) {
+      const script = `
+import json, os, sys
+from xorq.catalog.catalog import Catalog
+cat_path = os.environ.get("XORQ_CATALOG_PATH")
+cat = Catalog.from_repo_path(cat_path) if cat_path else Catalog.from_default()
+m = cat.load(${JSON.stringify(params.name)}).ls.builder
+dims = ${JSON.stringify(params.dimensions ?? [])}
+meas = ${JSON.stringify(params.measures ?? [])}
+ob_raw = ${JSON.stringify(params.order_by ?? [])}
+order_by = []
+for s in ob_raw:
+    if ":" in s:
+        col, direction = s.split(":", 1)
+    else:
+        col, direction = s, "asc"
+    order_by.append((col.strip(), direction.strip().lower()))
+q = m.query(
+    dimensions=tuple(dims),
+    measures=tuple(meas),
+    order_by=tuple(order_by) if order_by else None,
+)
+expr = q.to_untagged() if hasattr(q, "to_untagged") else q
+df = expr.execute()
+limit = ${params.limit ?? 0}
+if limit:
+    df = df.head(limit)
+fmt = ${JSON.stringify(params.format ?? "csv")}
+if fmt == "json":
+    sys.stdout.write(df.to_json(orient="records"))
+else:
+    sys.stdout.write(df.to_csv(index=False))
+`.trim();
+      const result = await pi.exec("python", ["-c", script], {
+        timeout: TIMEOUT_RUN,
+        signal,
+      });
+      if (result.code !== 0) {
+        throw new Error(`bsl_query failed: ${result.stderr}`);
+      }
+      return {
+        content: [{ type: "text", text: result.stdout }],
+        details: {},
+      };
+    },
+  });
+
+  // -----------------------------------------------------------------------
   // Tool: catalog_init — initialize a new catalog
   // -----------------------------------------------------------------------
   defTool<{ remote_url?: string }>({

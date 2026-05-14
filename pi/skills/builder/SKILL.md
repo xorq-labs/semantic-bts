@@ -155,31 +155,36 @@ bsl_tag = [t for t in tags if hasattr(t, "tag") and t.tag == "bsl"][0]
 model = from_tagged(bsl_tag.to_expr())
 ```
 
-### Deriving a new catalog entry from a recovered BSL model
+### Answering analytical questions against a BSL model
 
-This is the common "user asks an analytical question that the existing
-semantic model already covers" flow. The pattern is:
+**Decide first: one-shot or persisted?**
+
+- **One-shot** ("what's X by Y?") — use **`bsl_query`** directly. No build
+  script, no catalog entry. Fastest path.
+- **Persisted / reproducible** (the result should live in the catalog and
+  rebuild from `python -m semantic_bts.build`) — follow the build script
+  flow below.
+
+### One-shot path
+
+1. `catalog_list kind:true` → find the BSL `ExprBuilder` entry.
+2. `bsl_describe name:<entry>` → discover dims/measures. Do NOT fall back
+   to `python -c "... .ls.builder ..."` — the tool is authoritative.
+3. `bsl_query name:<entry> dimensions:[...] measures:[...] order_by:[...]
+   limit:<n>` → results as CSV.
+
+If the question genuinely needs a dim or measure that doesn't exist, say
+so and ask whether to extend the BSL model — don't invent names or reach
+for raw `flights`.
+
+### Persisted path — deriving a new catalog entry from a recovered BSL model
+
+The pattern is:
 
 1. **Discover the BSL entry** with `catalog_list` (kind: true) — look for
    `ExprBuilder` entries.
-2. **Introspect dims/measures** with a one-line `pi.exec` probe so you
-   don't guess at names:
-
-   ```python
-   # via bash or a tiny script
-   python - <<'PY'
-   from xorq.catalog.catalog import Catalog
-   from semantic_bts._paths import SUBMODULE_PATH
-   m = Catalog.from_repo_path(str(SUBMODULE_PATH)).load("semantic-flights").ls.builder
-   print("dimensions:", sorted(m.dimensions))
-   print("measures:",   sorted(m.measures))
-   PY
-   ```
-
-   Match the user's question against those names — don't invent new ones.
-   If the question genuinely needs a dim or measure that doesn't exist,
-   say so and ask whether to extend the BSL model (a separate, larger
-   change) before reaching for raw `flights`.
+2. **Introspect dims/measures** with **`bsl_describe`** (tool). Match the
+   user's question against those names — don't invent new ones.
 
 3. **Write a tiny build script under `src/semantic_bts/exprs/build_<topic>.py`**
    that loads the model, queries it, and untags the result:

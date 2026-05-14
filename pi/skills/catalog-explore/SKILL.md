@@ -6,6 +6,23 @@ description: Explore a xorq catalog — list entries, inspect schemas, and under
 
 Use the registered tools to help the user explore their catalog.
 
+## Do NOT shell out
+
+The xorq extension is authoritative — prefer registered tools over `bash`.
+
+- Do NOT run `xorq catalog ...` directly (e.g. `xorq catalog list`,
+  `xorq catalog -p <path> ...`). Use `catalog_list`, `catalog_schema`,
+  `catalog_run`, `catalog_info`, `catalog_log`, `catalog_check` instead.
+  Tools already inject `-p $XORQ_CATALOG_PATH` and `--no-sync` where needed.
+- Do NOT `cat catalog.yaml` or `ls` the catalog directory. Use `catalog_info`
+  + `catalog_list kind:true`.
+- Do NOT probe for unknown CLI flags (`--aliases`, etc.). If a tool doesn't
+  expose what you need, that capability probably doesn't exist — ask the
+  user rather than fishing in bash.
+- For BSL ExprBuilder entries do NOT drop into `python -c "... .ls.builder
+  ..."`. Use `bsl_describe` (dims/measures) and `bsl_query` (one-shot
+  analytical queries) instead.
+
 ## Workflow
 
 ### 1. Discover entries
