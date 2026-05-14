@@ -17,7 +17,8 @@ semantic-bts/
 │   ├── build.py            # orchestrator: wipes + rebuilds the submodule catalog
 │   └── _paths.py
 ├── xorq-catalog-bts/       # submodule -- the catalog (pristine remote starting point)
-└── porq/                   # submodule -- pi.dev + xorq integration (optional)
+├── pi/                     # pi.dev extension + skills (vendored, agent integration)
+└── AGENTS.md               # project rules for the pi agent
 ```
 
 ## Getting the source
@@ -138,20 +139,31 @@ from inside the submodule. This is not recommended for most use cases.
 
 ## Using pi.dev with the catalog
 
-The `porq` submodule wires xorq's catalog into the [pi.dev](https://pi.dev/)
-coding agent — it gives the agent tools to list, inspect, and run catalog
-entries. If you want an agent to help you explore or extend this catalog:
+The `pi/` directory ships a [pi.dev](https://pi.dev/) extension + skills that
+wire the agent into this project's catalog. The nix devShell pins it to
+`xorq-catalog-bts/` (via `XORQ_CATALOG_PATH`) and forces `--no-sync` on every
+mutating tool call, so the stock remote catalog is never accidentally pushed
+to. **pi requires nix** — there is no non-nix bootstrap.
+
+Two ways to launch it:
 
 ```bash
-cd porq
-nix develop      # or: ./setup.sh && source .venv/bin/activate && export PATH="$PWD/node_modules/.bin:$PATH"
-pi               # launch the agent
-# ... work with the agent ...
-cd ..            # hop back up
+# From a clone (recommended — gives you the BTS catalog and exprs):
+nix develop
+pi
+
+# From anywhere with just nix (no clone — vanilla agent + extension, no catalog):
+nix run github:xorq-labs/semantic-bts#pi
 ```
 
-See `porq/README.md` for details. Skip this section entirely if you just want
-to use the catalog from the CLI or Python.
+> **First build:** `flake.nix` uses `buildNpmPackage` with
+> `npmDepsHash = lib.fakeHash`. The first `nix develop` or `nix run` will
+> fail and print the correct SRI hash — paste it into `flake.nix` to seal
+> the build.
+
+The agent loads its project rules from the root `AGENTS.md`. Skills live in
+`pi/skills/<name>/SKILL.md`; the xorq extension lives in
+`pi/extensions/xorq.ts`.
 
 ## Appendix: trying it without cloning
 
