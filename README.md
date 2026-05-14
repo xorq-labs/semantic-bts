@@ -3,9 +3,6 @@ A xorq demo project built around a **remote git catalog** of BTS On-Time flights
 data and a [boring-semantic-layer](https://github.com/letsql/boring-semantic-layer)
 model over it.
 
-![Not this BTS](assets/image.png)
-
-
 
 Unlike a typical project that authors its catalog in-tree, here the catalog
 lives in a separate repo and is consumed as a git submodule:
