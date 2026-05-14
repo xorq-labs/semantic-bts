@@ -159,10 +159,9 @@ nix run .#pi
 nix run github:xorq-labs/semantic-bts#pi
 ```
 
-> **First build:** `flake.nix` uses `buildNpmPackage` with
-> `npmDepsHash = lib.fakeHash`. The first `nix develop` or `nix run` will
-> fail and print the correct SRI hash — paste it into `flake.nix` to seal
-> the build.
+> **If you change `pi/package-lock.json`:** set `npmDepsHash = lib.fakeHash`
+> in `flake.nix`, run `nix build .#pi-bundle` — nix will print the correct
+> SRI hash — then paste it back in.
 
 The agent loads its project rules from the root `AGENTS.md`. Skills live in
 `pi/skills/<name>/SKILL.md`; the xorq extension lives in
