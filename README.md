@@ -145,12 +145,15 @@ wire the agent into this project's catalog. The nix devShell pins it to
 mutating tool call, so the stock remote catalog is never accidentally pushed
 to. **pi requires nix** — there is no non-nix bootstrap.
 
-Two ways to launch it:
+Three ways to launch it:
 
 ```bash
 # From a clone (recommended — gives you the BTS catalog and exprs):
 nix develop
 pi
+
+# From a clone, without entering a devShell first:
+nix run .#pi
 
 # From anywhere with just nix (no clone — vanilla agent + extension, no catalog):
 nix run github:xorq-labs/semantic-bts#pi
