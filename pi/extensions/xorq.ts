@@ -82,6 +82,87 @@ function buildArgs(...rest: string[]): string[] {
     : ["build", ...rest];
 }
 
+// ---------------------------------------------------------------------
+// Easter eggs.
+//
+// Random emoticon/ASCII flair wraps tool output and the session-start
+// greeting. Applied only to info-style tools — data-output tools whose
+// stdout is parsed (catalog_run, catalog_schema, bsl_query, bsl_describe,
+// xorq_build, xorq_run) opt out so decoration can't corrupt CSV/JSON or
+// confuse the "last line is the build path" contract.
+//
+// Disable everything by setting PI_EASTER_EGGS=0.
+// ---------------------------------------------------------------------
+const EGG_GREETINGS = [
+  "( •_•)>⌐■-■  semantic-bts online",
+  "ʕ•ᴥ•ʔ  xorq says hi",
+  "(づ｡◕‿‿◕｡)づ  ready to poke some flights",
+  "~(˘▾˘~)  zero-flight stress",
+  "(•_•) ( •_•)>⌐■-■ (⌐■_■)  catalog warmed up",
+  "✧*｡٩(ˊᗜˋ*)و✧*｡  ready when you are",
+  "ʕっ•ᴥ•ʔっ  the catalog and I are paws-itive about today",
+] as const;
+
+const EGG_BEFORE = [
+  "( •_•)>⌐■-■   one sec...",
+  "ʕっ•ᴥ•ʔっ   sniffing...",
+  "~(˘▾˘~)   thinking...",
+  "(っ◔◡◔)っ   hold the line",
+  "*✲ﾟ*｡✧٩(･ิᴗ･ิ๑)۶   tally-ho",
+  "(°ロ°)☝   one moment",
+  "┬─┬ノ( º _ ºノ)   tidying tables",
+] as const;
+
+const EGG_AFTER = [
+  "(⌐■_■)   ✓",
+  "\\(^o^)/   done!",
+  "(づ￣ ³￣)づ   xoxo",
+  "ʕっ•ᴥ•ʔっ   served warm",
+  "(´｡• ω •｡`)   ship it",
+  "✧*｡٩(ˊᗜˋ*)و✧*｡   ✨",
+  "(•_•) ( •_•)>⌐■-■ (⌐■_■)",
+  "(งツ)ว   knock knock",
+] as const;
+
+const EGG_ART = [
+  String.raw`
+   ___  ___  ___  ___
+  /   \/   \/   \/   \    ʕ•ᴥ•ʔ
+  \___/\___/\___/\___/   semantic-bts
+`,
+  String.raw`
+      __|__
+  --o--(_)--o--    ( •_•)>⌐■-■
+                   flight catalog ready
+`,
+  String.raw`
+   .--.   .--.
+  : (\). : (\).   (づ｡◕‿‿◕｡)づ
+  '.__.' '.__.'    xorq + bsl
+`,
+  String.raw`
+     /\_/\
+    ( o.o )    \(^o^)/   ship it
+     > ^ <
+`,
+] as const;
+
+function eggsOn(): boolean {
+  return process.env.PI_EASTER_EGGS !== "0";
+}
+
+function pickEgg<T>(arr: readonly T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function decorateText(text: string): string {
+  if (!eggsOn()) return text;
+  // Independent rolls so before/after pairing varies.
+  const before = Math.random() < 0.55 ? pickEgg(EGG_BEFORE) + "\n\n" : "";
+  const after = Math.random() < 0.55 ? "\n\n" + pickEgg(EGG_AFTER) : "";
+  return `${before}${text}${after}`;
+}
+
 export default function (pi: ExtensionAPI) {
   const defTool = <P>(spec: ToolSpec<P>): void =>
     (pi.registerTool as (t: unknown) => void)(spec);
@@ -99,6 +180,9 @@ export default function (pi: ExtensionAPI) {
     timeout?: number;
     signal?: AbortSignal;
     allowNonZeroWithStdout?: boolean;
+    // Wrap output in easter-egg banners. Off by default — opt in only for
+    // info-style tools whose output isn't position-parsed downstream.
+    decorate?: boolean;
   };
 
   async function runXorq(args: string[], opts: RunOpts = {}): Promise<ToolResult> {
@@ -106,6 +190,9 @@ export default function (pi: ExtensionAPI) {
       timeout: opts.timeout ?? TIMEOUT_QUICK,
       signal: opts.signal,
     });
+
+    const maybeDecorate = (text: string): string =>
+      opts.decorate ? decorateText(text) : text;
 
     if (opts.allowNonZeroWithStdout) {
       const out = result.stdout.trim();
@@ -116,7 +203,7 @@ export default function (pi: ExtensionAPI) {
         result.code !== 0
           ? `[xorq exit ${result.code}; stderr: ${result.stderr.trim()}]\n${out}`
           : out;
-      return { content: [{ type: "text", text }], details: {} };
+      return { content: [{ type: "text", text: maybeDecorate(text) }], details: {} };
     }
 
     if (result.code !== 0) {
@@ -125,7 +212,7 @@ export default function (pi: ExtensionAPI) {
       );
     }
     return {
-      content: [{ type: "text", text: result.stdout || "OK" }],
+      content: [{ type: "text", text: maybeDecorate(result.stdout || "OK") }],
       details: {},
     };
   }
@@ -147,7 +234,7 @@ export default function (pi: ExtensionAPI) {
     async execute(_id, params, signal) {
       const args = catalogArgs("list");
       if (params.kind) args.push("--kind");
-      return runXorq(args, { signal });
+      return runXorq(args, { signal, decorate: true });
     },
   });
 
@@ -227,7 +314,11 @@ export default function (pi: ExtensionAPI) {
       "Use this to check if a catalog is initialized and where it lives.",
     parameters: Type.Object({}),
     async execute(_id, _params, signal) {
-      return runXorq(catalogArgs("info"), { signal, timeout: TIMEOUT_FAST });
+      return runXorq(catalogArgs("info"), {
+        signal,
+        timeout: TIMEOUT_FAST,
+        decorate: true,
+      });
     },
   });
 
@@ -446,7 +537,7 @@ else:
     async execute(_id, params, signal) {
       const args = catalogArgs("init");
       if (params.remote_url) args.push("--remote-url", params.remote_url);
-      return runXorq(args, { signal });
+      return runXorq(args, { signal, decorate: true });
     },
   });
 
@@ -481,7 +572,7 @@ else:
       // overwrite the stock catalog. The user can opt out by clearing
       // XORQ_CATALOG_PATH and using `xorq` directly.
       if (params.no_sync || CATALOG_PATH) args.push("--no-sync");
-      return runXorq(args, { signal, timeout: TIMEOUT_MUTATE });
+      return runXorq(args, { signal, timeout: TIMEOUT_MUTATE, decorate: true });
     },
   });
 
@@ -506,7 +597,7 @@ else:
       const args = catalogArgs("remove", ...params.names);
       // See catalog_add: force --no-sync in pinned-catalog mode.
       if (params.no_sync || CATALOG_PATH) args.push("--no-sync");
-      return runXorq(args, { signal, timeout: TIMEOUT_MUTATE });
+      return runXorq(args, { signal, timeout: TIMEOUT_MUTATE, decorate: true });
     },
   });
 
@@ -556,7 +647,7 @@ else:
       if (params.code) args.push("-c", params.code);
       if (params.alias) args.push("-a", params.alias);
       if (params.dry_run) args.push("--dry-run");
-      return runXorq(args, { signal, timeout: TIMEOUT_RUN });
+      return runXorq(args, { signal, timeout: TIMEOUT_RUN, decorate: true });
     },
   });
 
@@ -575,7 +666,7 @@ else:
     async execute(_id, params, signal) {
       const args = catalogArgs("log");
       if (params.json) args.push("--json");
-      return runXorq(args, { signal });
+      return runXorq(args, { signal, decorate: !params.json });
     },
   });
 
@@ -589,7 +680,11 @@ else:
       "Validate that catalog entries, aliases, metadata, and archives are consistent.",
     parameters: Type.Object({}),
     async execute(_id, _params, signal) {
-      return runXorq(catalogArgs("check"), { signal, timeout: TIMEOUT_MUTATE });
+      return runXorq(catalogArgs("check"), {
+        signal,
+        timeout: TIMEOUT_MUTATE,
+        decorate: true,
+      });
     },
   });
 
@@ -698,6 +793,20 @@ else:
   });
 
   // -----------------------------------------------------------------------
+  // Command: /wave — print random ASCII art (pure fun, opt-out via env)
+  // -----------------------------------------------------------------------
+  pi.registerCommand("wave", {
+    description: "Wave hello with a random ASCII greeting",
+    handler: async (_args, ctx) => {
+      if (!eggsOn()) {
+        ctx.ui.notify("easter eggs disabled (PI_EASTER_EGGS=0)", "info");
+        return;
+      }
+      ctx.ui.notify(pickEgg(EGG_ART), "info");
+    },
+  });
+
+  // -----------------------------------------------------------------------
   // Command: /xorq-reload — manually reload after catalog changes
   // -----------------------------------------------------------------------
   pi.registerCommand("xorq-reload", {
@@ -779,9 +888,10 @@ else:
       const where = CATALOG_PATH
         ? ` (pinned: ${CATALOG_PATH}; mutations are --no-sync)`
         : "";
+      const greeting = eggsOn() ? `  ${pickEgg(EGG_GREETINGS)}` : "";
       ctx.ui.setStatus(
         "xorq",
-        `xorq catalog active${where} — use /catalog or catalog_list tool`,
+        `xorq catalog active${where} — use /catalog or catalog_list tool${greeting}`,
       );
       startWatching(ctx);
     }
