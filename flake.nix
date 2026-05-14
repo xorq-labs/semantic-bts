@@ -79,7 +79,7 @@
           version = "0.1.0";
           src = ./pi;
           # Replace with the hash nix prints on first build.
-          npmDepsHash = lib.fakeHash;
+          npmDepsHash = "sha256-L8FKGgqBF6u2yyO9d0kJi6hgnsLgxSHRoh8Jq772jd8=";
           # No build step — pi-coding-agent ships precompiled JS.
           dontNpmBuild = true;
           # Install hook: leave node_modules under $out/lib/node_modules/<pkg>/
