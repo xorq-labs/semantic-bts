@@ -1,0 +1,15 @@
+{
+  "name": "@xorq-labs/semantic-bts-pi",
+  "version": "0.1.0",
+  "description": "pi.dev extension and skills for the semantic-bts xorq catalog",
+  "private": true,
+  "keywords": ["pi-package", "xorq", "data-engineering", "semantic-catalog"],
+  "license": "MIT",
+  "dependencies": {
+    "@mariozechner/pi-coding-agent": "^0.70.2"
+  },
+  "pi": {
+    "skills": ["./skills"],
+    "extensions": ["./extensions"]
+  }
+}

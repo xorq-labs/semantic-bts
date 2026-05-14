@@ -15,3 +15,8 @@ __pycache__/
 
 # xorq build artifacts produced by `python -m semantic_bts.build`.
 builds/
+
+# Node (pi.dev extensions in pi/) — symlinked into /nix/store by the flake
+node_modules/
+.npm-cache/
+pi/node_modules
