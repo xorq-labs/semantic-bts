@@ -29,7 +29,7 @@ The xorq extension is authoritative — prefer registered tools over `bash`.
 
 Call **`catalog_list`** with `kind: true` to list entries with their kinds.
 
-The catalog tools are pinned to `$XORQ_CATALOG_PATH` (set by the nix shell to the project's `xorq-catalog-bts/` submodule). The user is asking about that catalog — do not look elsewhere. Only fall back to bash with `-p <other-path>` if the user explicitly asks about a different catalog.
+The catalog tools target whichever catalog is active — either `$XORQ_CATALOG_PATH` (set by the nix shell) or the persisted default (`xorq catalog default --set <name>`). In this project, the active catalog is `xorq-catalog-bts`. Do not look elsewhere. Only fall back to bash with `-p <other-path>` if the user explicitly asks about a different catalog.
 
 ### 2. Inspect schemas
 
