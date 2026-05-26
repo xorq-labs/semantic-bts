@@ -4,9 +4,9 @@ version = "0.1.0"
 description = "Example using boring-samantic-layer & xorq calculate measures with bureau of labor statitstics data."
 requires-python = ">=3.10,<3.14"
 dependencies = [
- "boring-semantic-layer>=0.3.13",
+ "boring-semantic-layer>=0.3.14",
  "click>=8.3.1",
- "xorq>=0.3.24",
+ "xorq>=0.3.26",
 ]
 
 [project.scripts]
