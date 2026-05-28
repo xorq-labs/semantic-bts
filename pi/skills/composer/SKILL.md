@@ -6,6 +6,23 @@ description: Compose and run xorq catalog entries. Use when the user wants to co
 
 Compose existing catalog entries, run them, and optionally catalog the results.
 
+## Do NOT shell out
+
+The xorq extension is authoritative — prefer registered tools over `bash`.
+
+- Do NOT run `xorq catalog ...` directly. Use `catalog_list`, `catalog_run`,
+  `catalog_compose`, `catalog_schema`, `catalog_add`, etc.
+- Do NOT write standalone Python scripts to query or inspect catalog entries.
+  Use the tools (`catalog_run`, `bsl_query`, `bsl_describe`).
+- Only drop to bash/python for **build scripts** that define an `expr` variable
+  for `xorq_build`.
+
+### Common API mistakes (avoid these)
+
+- `Catalog.from_path()` does NOT exist → use `Catalog.from_repo_path()`
+- `Catalog(path_string)` does NOT work → constructor takes a `CatalogBackend`
+- `SemanticModel.from_tagged()` does NOT exist → use `boring_semantic_layer.from_tagged()` (module-level)
+
 ## When NOT to use composer
 
 If the user's question can be answered by querying an **existing BSL

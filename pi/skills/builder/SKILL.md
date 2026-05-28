@@ -6,6 +6,28 @@ description: Create ExprBuilder catalog entries — ML pipelines (FittedPipeline
 
 Guide the user through creating catalog entries with recoverable domain objects via the TagHandler registry. This covers ML pipelines, semantic models (BSL), and custom builders.
 
+## Do NOT shell out
+
+The xorq extension is authoritative — prefer registered tools over `bash`.
+
+- Do NOT write standalone Python scripts to query BSL models. Use `bsl_describe`
+  (dims/measures) and `bsl_query` (one-shot analytical queries) instead.
+- Do NOT drop into `python -c "... .ls.builder ..."` or write `/tmp/*.py` scripts
+  to interact with catalog entries. The tools handle `Catalog.from_repo_path`,
+  `XORQ_CATALOG_PATH`, and the correct `from_tagged` import automatically.
+- Do NOT run `xorq catalog ...` directly. Use `catalog_list`, `catalog_schema`,
+  `catalog_run`, `catalog_add`, etc. Tools already inject `-p $XORQ_CATALOG_PATH`
+  and `--no-sync` where needed.
+- Only drop to bash/python for **build scripts** that define an `expr` variable
+  for `xorq_build` — never for querying or inspecting catalog entries.
+
+### Common API mistakes (avoid these)
+
+- `Catalog.from_path()` does NOT exist → use `Catalog.from_repo_path()`
+- `Catalog(path_string)` does NOT work → constructor takes a `CatalogBackend`
+- `SemanticModel.from_tagged()` does NOT exist → use `boring_semantic_layer.from_tagged()` (module-level)
+- `.ls.builder` is the fast path to recover a SemanticModel from a loaded entry
+
 ## ML Pipelines (FittedPipeline)
 
 ### Prerequisites
