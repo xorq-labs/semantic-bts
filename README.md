@@ -152,7 +152,8 @@ pi
 # From a clone, without entering a devShell first:
 nix run .#pi
 
-# From anywhere with just nix (no clone — vanilla agent + extension, no catalog):
+# From anywhere with just nix (no semantic-bts clone needed) — clones
+# xorq-catalog-bts into a fresh scratch dir per invocation and wires it up:
 nix run github:xorq-labs/semantic-bts#pi
 ```
 
