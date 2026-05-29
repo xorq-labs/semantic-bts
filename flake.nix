@@ -118,13 +118,29 @@
           text = ''
             set -euo pipefail
 
-            # Locate the repo root if we're inside one; otherwise fall back to a
-            # scratch dir so `nix run github:.../#pi` still works without a clone.
+            # Locate the repo root if we're inside a semantic-bts checkout;
+            # otherwise fall back to a scratch dir and clone the catalog so
+            # `nix run github:.../#pi` works from /tmp or any unrelated repo.
+            REPO_ROOT=""
             if git rev-parse --show-toplevel >/dev/null 2>&1; then
-              REPO_ROOT=$(git rev-parse --show-toplevel)
-            else
+              candidate=$(git rev-parse --show-toplevel)
+              # Guard: only treat the cwd as REPO_ROOT if it's actually a
+              # semantic-bts checkout (avoids scribbling .pi/, pi/, builds/
+              # into an unrelated repo the user happens to be inside).
+              if [ -f "$candidate/.gitmodules" ] && \
+                 grep -q "xorq-catalog-bts" "$candidate/.gitmodules" 2>/dev/null; then
+                REPO_ROOT=$candidate
+              else
+                echo "[semantic-bts-pi] cwd is a git repo but not semantic-bts — using scratch dir" >&2
+              fi
+            fi
+            if [ -z "$REPO_ROOT" ]; then
               REPO_ROOT=$(mktemp -d -t semantic-bts-pi.XXXXXX)
-              echo "[semantic-bts-pi] no git repo here — using scratch dir $REPO_ROOT" >&2
+              echo "[semantic-bts-pi] scratch dir: $REPO_ROOT" >&2
+              echo "[semantic-bts-pi] cloning xorq-catalog-bts..." >&2
+              git clone --depth=1 \
+                https://github.com/xorq-labs/xorq-catalog-bts \
+                "$REPO_ROOT/xorq-catalog-bts" >&2
             fi
             export REPO_ROOT
 
