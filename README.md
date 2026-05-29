@@ -142,23 +142,19 @@ wire the agent into this project's catalog. The nix devShell pins it to
 mutating tool call, so the stock remote catalog is never accidentally pushed
 to. **pi requires nix** — there is no non-nix bootstrap.
 
-Three ways to launch it:
+Two ways to launch it from a clone:
 
 ```bash
-# From a clone (recommended — gives you the BTS catalog and exprs):
+# Recommended — gives you the BTS catalog and exprs:
 nix develop
 pi
 
-# From a clone, without entering a devShell first:
+# Without entering a devShell first:
 nix run .#pi
-
-# From anywhere with just nix (no semantic-bts clone needed) — clones
-# xorq-catalog-bts into a fresh scratch dir per invocation and wires it up:
-nix run github:xorq-labs/semantic-bts#pi
-
-# Same, for ssh users (e.g. when the flake repo is private/internal):
-nix run "git+ssh://git@github.com/xorq-labs/semantic-bts#pi"
 ```
+
+See the [Appendix](#appendix-trying-it-without-cloning) for the
+no-clone (`nix run <url>#pi`) form.
 
 > **If you change `pi/package-lock.json`:** set `npmDepsHash = lib.fakeHash`
 > in `flake.nix`, run `nix build .#pi-bundle` — nix will print the correct
@@ -170,16 +166,23 @@ The agent loads its project rules from the root `AGENTS.md`. Skills live in
 
 ## Appendix: trying it without cloning
 
-If you just want to poke at the package (not the catalog — that needs the
-submodule), you can run it straight from the git URL:
+If you just want to poke at the package or pi, you can run it straight
+from the git URL:
 
 ```bash
 url=git+ssh://git@github.com/xorq-labs/semantic-bts
 
-# run the CLI via nix (no clone needed)
+# run the CLI via nix (catalog needs the submodule, so this only exercises
+# the package itself)
 nix run $url -- list
 nix run $url -- run flights-by-quarter-carrier -n 5
 
+# launch pi — the launcher shallow-clones xorq-catalog-bts into a fresh
+# scratch dir under /tmp on each invocation and wires XORQ_CATALOG_PATH:
+nix run $url#pi
+# or, with the github: shorthand (requires the flake repo to be public or
+# a github token configured in nix.conf):
+nix run github:xorq-labs/semantic-bts#pi
 
 # drop into ipython with the package installed
 uv tool run --isolated --python 3.13 --with $url ipython
