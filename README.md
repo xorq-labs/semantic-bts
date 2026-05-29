@@ -155,6 +155,9 @@ nix run .#pi
 # From anywhere with just nix (no semantic-bts clone needed) — clones
 # xorq-catalog-bts into a fresh scratch dir per invocation and wires it up:
 nix run github:xorq-labs/semantic-bts#pi
+
+# Same, for ssh users (e.g. when the flake repo is private/internal):
+nix run "git+ssh://git@github.com/xorq-labs/semantic-bts#pi"
 ```
 
 > **If you change `pi/package-lock.json`:** set `npmDepsHash = lib.fakeHash`
