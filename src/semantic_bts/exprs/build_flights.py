@@ -24,7 +24,7 @@ def fetch_bts_months(df_in):
 
     URL_TEMPLATE = (
         "https://transtats.bts.gov/PREZIP/"
-        "On_Time_Reporting_Carrier_On_Time_Performance_1987_present_{ym}.zip"
+        "On_Time_Reporting_Carrier_On_Time_Performance_1987_present_{year_month}.zip"
     )
 
     # Canonical BTS On-Time Reporting Carrier On-Time Performance schema.
@@ -163,7 +163,7 @@ def fetch_bts_months(df_in):
 
     def fetch_one(year_month):
         req = urllib.request.Request(
-            URL_TEMPLATE.format(ym=year_month),
+            URL_TEMPLATE.format(year_month=year_month),
             headers={"User-Agent": "xorq-catalog-bts/1.0"},
         )
         last = None
@@ -192,14 +192,14 @@ def fetch_bts_months(df_in):
                 )
 
     frames = []
-    for ym in df_in["year_month"]:
-        ys, ms = ym.split("_", 1)
+    for year_month in df_in["year_months"]:
+        ys, ms = year_month.split("_", 1)
         year, month = int(ys), int(ms)
-        df_m = fetch_one(ym)
+        df_m = fetch_one(year_month)
         df_m["_bts_year"] = year
         df_m["_bts_month"] = month
         df_m["_bts_source_file"] = (
-            f"On_Time_Reporting_Carrier_On_Time_Performance_1987_present_{ym}.zip"
+            f"On_Time_Reporting_Carrier_On_Time_Performance_1987_present_{year_month}.zip"
         )
         df_m["_bts_source_url_prefix"] = URL_PREFIX
         frames.append(df_m)
@@ -230,9 +230,9 @@ def fetch_bts_months(df_in):
 
 con = xo.connect()
 
-months_memtable = xo.memtable({"year_month": ["2025_11", "2025_12"]})
+months_memtable = xo.memtable({"year_months": ["2025_11", "2025_12"]})
 
-schema_in = xo.schema({"year_month": "string"})
+schema_in = xo.schema({"year_months": "string"})
 schema_out = xo.schema(
     {
         "Year": "int32",
