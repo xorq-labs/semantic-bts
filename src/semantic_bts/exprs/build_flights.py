@@ -164,7 +164,7 @@ def fetch_bts_months(df_in):
     def fetch_one(year_month):
         req = urllib.request.Request(
             URL_TEMPLATE.format(ym=year_month),
-            headers={"User-Agent": "xorq-catalog-faa/1.0"},
+            headers={"User-Agent": "xorq-catalog-bts/1.0"},
         )
         last = None
         for _ in range(3):
