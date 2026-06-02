@@ -85,9 +85,11 @@ immediately without rebuilding the expressions:
 
 ```bash
 xorq catalog -p xorq-catalog-bts list --kind
-xorq catalog -p xorq-catalog-bts run flights -f json --limit 5
-xorq catalog -p xorq-catalog-bts run flights-by-quarter-carrier -f json --limit 20
+xorq catalog -p xorq-catalog-bts run flights -o - -f json --limit 5
+xorq catalog -p xorq-catalog-bts run flights-by-quarter-carrier -o - -f json --limit 20
 ```
+
+Or browse interactively with `xorq catalog -p xorq-catalog-bts tui`, a terminal UI for listing entries, inspecting schemas, and previewing rows.
 
 ### Re-pointing the month range
 
@@ -100,14 +102,18 @@ at execution time, no rebuild required:
 ```bash
 # the source
 xorq catalog -p xorq-catalog-bts run flights \
-    --params year_months=2025_10,2025_11 -f json --limit 5
+    --params year_months=2025_10,2025_11 -o - -f json --limit 5
 
 # ...and the same param flows into the aggregates built on top of it
 xorq catalog -p xorq-catalog-bts run flights-by-quarter-carrier \
-    --params year_months=2025_10,2025_11 -f json --limit 20
+    --params year_months=2025_10,2025_11 -o - -f json --limit 20
 ```
 
-Or browse interactively with `xorq catalog -p xorq-catalog-bts tui`, a terminal UI for listing entries, inspecting schemas, and previewing rows.
+Under the hood, `flights` is a UDXF: at execution time it takes the
+`year_months` value, fetches the matching monthly On-Time Performance zips
+straight from BTS (`https://transtats.bts.gov/PREZIP/...`), parses + casts
+them, and caches the result locally. Re-pointing the param re-runs that fetch
+for the new months on demand.
 
 ## Rebuilding the catalog locally
 
@@ -164,6 +170,7 @@ load("flights").to_pandas(params={"year_months": "2025_10,2025_11"})
 
 # get all expressions as a dict
 exprs = get_exprs()  # {"flights": <expr>, "semantic-flights": <expr>, ...}
+exprs["flights"] 
 ```
 
 ## Sharing the catalog with others (optional)
@@ -193,6 +200,14 @@ nix run github:xorq-labs/semantic-bts#pi                  # https
 nix run "git+ssh://git@github.com/xorq-labs/semantic-bts#pi"   # ssh
 ```
 
+Once it's running, ask analytic questions about the flight data in plain
+English and the agent drives the catalog for you:
+
+- "Which carriers had the worst average arrival delay last quarter?"
+- "Show cancellation rates by origin state for December 2025."
+- "What day of the week has the most delays into California?"
+- "Re-run that for 2025_10,2025_11 instead."
+
 > **If you change `pi/package-lock.json`:** set `npmDepsHash = lib.fakeHash`
 > in `flake.nix`, run `nix build .#pi-bundle`; nix will print the correct
 > SRI hash, then paste it back in.
@@ -200,24 +215,3 @@ nix run "git+ssh://git@github.com/xorq-labs/semantic-bts#pi"   # ssh
 The agent loads its project rules from the root `AGENTS.md`. Skills live in
 `pi/skills/<name>/SKILL.md`; the xorq extension lives in
 `pi/extensions/xorq.ts`.
-
-## Appendix: trying it without cloning
-
-If you just want to poke at the package (not the catalog, that needs the
-submodule), you can run it straight from the git URL:
-
-```bash
-url=git+ssh://git@github.com/xorq-labs/semantic-bts   
-# or https: github:xorq-labs/semantic-bts
-
-# run the CLI via nix (no clone needed)
-nix run $url -- list
-nix run $url -- run flights-by-quarter-carrier -n 5
-
-
-# drop into ipython with the package installed
-uv tool run --isolated --python 3.13 --with $url ipython
-
-# drop into a bash shell with the package on PATH (nix)
-nix develop --refresh $url
-```
