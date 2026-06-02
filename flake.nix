@@ -179,6 +179,42 @@
             exec pi "$@"
           '';
         };
+
+      # Launcher for `nix run .#tui` — opens the xorq catalog TUI against the
+      # bundled BTS catalog. Like the pi launcher, it works with zero clone:
+      # if the cwd isn't a semantic-bts checkout it shallow-clones
+      # xorq-catalog-bts into a scratch dir and points the TUI at it.
+      makeTuiLauncher =
+        { pkgs, venv }:
+        pkgs.writeShellApplication {
+          name = "semantic-bts-tui";
+          runtimeInputs = [
+            venv
+            pkgs.git
+            pkgs.coreutils
+          ];
+          text = ''
+            set -euo pipefail
+
+            CATALOG=""
+            if git rev-parse --show-toplevel >/dev/null 2>&1; then
+              candidate=$(git rev-parse --show-toplevel)
+              if [ -f "$candidate/xorq-catalog-bts/catalog.yaml" ]; then
+                CATALOG="$candidate/xorq-catalog-bts"
+              fi
+            fi
+            if [ -z "$CATALOG" ]; then
+              scratch=$(mktemp -d -t semantic-bts-tui.XXXXXX)
+              echo "[semantic-bts-tui] cloning xorq-catalog-bts into $scratch..." >&2
+              git clone --depth=1 \
+                https://github.com/xorq-labs/xorq-catalog-bts \
+                "$scratch/xorq-catalog-bts" >&2
+              CATALOG="$scratch/xorq-catalog-bts"
+            fi
+
+            exec xorq catalog -p "$CATALOG" tui "$@"
+          '';
+        };
     in
     {
       devShells = forAllSystems (
@@ -264,6 +300,10 @@
             inherit venv;
             inherit piBundle;
           };
+          tuiLauncher = makeTuiLauncher {
+            inherit pkgs;
+            inherit venv;
+          };
         in
         {
           default = {
@@ -274,6 +314,11 @@
           pi = {
             type = "app";
             program = "${piLauncher}/bin/semantic-bts-pi";
+          };
+          # nix run .#tui (or nix run github:xorq-labs/semantic-bts#tui)
+          tui = {
+            type = "app";
+            program = "${tuiLauncher}/bin/semantic-bts-tui";
           };
         }
       );

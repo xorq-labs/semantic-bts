@@ -1,11 +1,20 @@
 """Thin CLI over the bundled BTS catalog.
 
-Commands:
+These are convenience wrappers, not new functionality. Every command except
+`rebuild` is just a friendlier shorthand over `xorq catalog -p
+xorq-catalog-bts ...`:
+
   semantic-bts list        -- show catalog entries (alias, kind)
+                              ~ xorq catalog -p xorq-catalog-bts list --kind
   semantic-bts list-exprs  -- show Python-importable expression names
-  semantic-bts run ALIAS   -- execute an expression and print result
+                              (package-specific: maps import names -> aliases)
   semantic-bts show ALIAS  -- show schema and metadata for an entry
+                              ~ xorq catalog -p xorq-catalog-bts show ALIAS
+  semantic-bts run ALIAS   -- execute an expression and print result
+                              ~ xorq catalog -p xorq-catalog-bts run ALIAS
   semantic-bts rebuild     -- wipe and rebuild the submodule catalog
+                              (the ONLY project-specific command; no xorq
+                               equivalent -- runs the src/exprs/ orchestrator)
 
 For richer catalog ops use `xorq catalog -p xorq-catalog-bts ...` directly.
 """
