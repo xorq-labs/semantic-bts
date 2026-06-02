@@ -200,24 +200,3 @@ nix run "git+ssh://git@github.com/xorq-labs/semantic-bts#pi"   # ssh
 The agent loads its project rules from the root `AGENTS.md`. Skills live in
 `pi/skills/<name>/SKILL.md`; the xorq extension lives in
 `pi/extensions/xorq.ts`.
-
-## Appendix: trying it without cloning
-
-If you just want to poke at the package (not the catalog, that needs the
-submodule), you can run it straight from the git URL:
-
-```bash
-url=git+ssh://git@github.com/xorq-labs/semantic-bts   
-# or https: github:xorq-labs/semantic-bts
-
-# run the CLI via nix (no clone needed)
-nix run $url -- list
-nix run $url -- run flights-by-quarter-carrier -n 5
-
-
-# drop into ipython with the package installed
-uv tool run --isolated --python 3.13 --with $url ipython
-
-# drop into a bash shell with the package on PATH (nix)
-nix develop --refresh $url
-```
