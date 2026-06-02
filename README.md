@@ -63,6 +63,15 @@ xorq catalog -p xorq-catalog-bts run flights -f json --limit 5
 xorq catalog -p xorq-catalog-bts run flights-by-quarter-carrier -f json --limit 20
 ```
 
+The `flights` source exposes a deferred `year_months` parameter (a
+comma-delimited string, default `2025_11,2025_12`). Re-point any entry at a
+different month range at execution time — no rebuild required:
+
+```bash
+xorq catalog -p xorq-catalog-bts run flights \
+    --params year_months=2025_10,2025_11 -f json --limit 5
+```
+
 Or browse interactively with `xorq catalog -p xorq-catalog-bts tui` — a terminal UI for listing entries, inspecting schemas, and previewing rows.
 
 Entries:
@@ -105,6 +114,9 @@ flights.limit(5).to_pandas()
 # load by alias
 load("flights-by-quarter-carrier").limit(10).to_pandas()
 
+# re-point the deferred year_months param at execution time
+load("flights").to_pandas(params={"year_months": "2025_10,2025_11"})
+
 # get all expressions as a dict
 exprs = get_exprs()  # {"flights": <expr>, "semantic-flights": <expr>, ...}
 ```
@@ -120,8 +132,13 @@ semantic-bts list-exprs      # show Python-importable expression names
 semantic-bts show ALIAS      # show schema and metadata for an entry
 semantic-bts run ALIAS       # execute an expression and print first rows
 semantic-bts run ALIAS -n 20 # limit output to 20 rows
+semantic-bts run flights --year-months 2025_10,2025_11  # re-point the month range
 semantic-bts rebuild         # wipe + rebuild the submodule catalog
 ```
+
+`--year-months` re-points the deferred `year_months` param; omit it to use the
+default `2025_11,2025_12`. The param flows through every downstream entry, so
+you can also pass it to `flights-by-quarter-carrier`, `semantic-flights`, etc.
 
 For richer catalog ops — `tui`, `add`, `remove`, etc. — use the underlying
 `xorq` CLI directly.
