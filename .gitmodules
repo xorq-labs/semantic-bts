@@ -1,3 +1,12 @@
 [submodule "xorq-catalog-bts"]
 	path = xorq-catalog-bts
 	url = https://github.com/xorq-labs/xorq-catalog-bts
+[submodule "catalogs/penguins"]
+	path = catalogs/penguins
+	url = /Users/hussainsultan/Documents/Xorq/catalogs/penguins
+[submodule "catalogs/flights"]
+	path = catalogs/flights
+	url = /Users/hussainsultan/Documents/Xorq/catalogs/flights
+[submodule "catalogs/xorq-catalog-bts"]
+	path = catalogs/xorq-catalog-bts
+	url = /Users/hussainsultan/Documents/Xorq/catalogs/xorq-catalog-bts
