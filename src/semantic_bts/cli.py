@@ -62,14 +62,21 @@ def list_exprs() -> None:
 @cli.command()
 @click.argument("alias", shell_complete=_complete_alias)
 @click.option("--limit", "-n", default=10, show_default=True, help="Rows to display.")
-def run(alias: str, limit: int) -> None:
+@click.option(
+    "--year-months",
+    default=None,
+    help='Comma-separated BTS months, e.g. "2025_10,2025_11". '
+    "Omit for the default range.",
+)
+def run(alias: str, limit: int, year_months: str | None) -> None:
     """Execute an expression and print the first rows."""
     if not _has_catalog():
         raise click.ClickException(
             "catalog submodule not found — clone with --recurse-submodules to use 'run'"
         )
     expr = load(alias)
-    df = expr.limit(limit).to_pandas()
+    params = {"year_months": year_months} if year_months else {}
+    df = expr.limit(limit).to_pandas(params=params)
     click.echo(df.to_string())
 
 

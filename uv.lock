@@ -36,18 +36,6 @@ wheels = [
 ]
 
 [[package]]
-name = "beniget"
-version = "0.4.2.post1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "gast" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/2e/27/5bb01af8f2860d431b98d0721b96ff2cea979106cae3f2d093ec74f6400c/beniget-0.4.2.post1.tar.gz", hash = "sha256:a0258537e65e7e14ec33a86802f865a667f949bb6c73646d55e42f7c45a052ae", size = 32274, upload-time = "2024-06-28T10:20:05.708Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/44/e4/6e8731d4d10dd09942a6f5015b2148ae612bf13e49629f33f9fade3c8253/beniget-0.4.2.post1-py3-none-any.whl", hash = "sha256:e1b336e7b5f2ae201e6cc21f533486669f1b9eccba018dcff5969cd52f1c20ba", size = 17242, upload-time = "2024-06-28T10:20:03.197Z" },
-]
-
-[[package]]
 name = "boring-semantic-layer"
 version = "0.3.14"
 source = { registry = "https://pypi.org/simple" }
@@ -432,18 +420,6 @@ wheels = [
 ]
 
 [[package]]
-name = "envyaml"
-version = "1.10.211231"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "pyyaml" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/aa/ce/bcc062f1d55368713674cf55851a4d9dfa77835c0258753d0f23dff70743/envyaml-1.10.211231.tar.gz", hash = "sha256:88f8a076159e3c317d3450a5f404132b6ac91aecee4934ea72eac65f911f1244", size = 7591, upload-time = "2022-01-08T10:56:40.01Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/67/99/6612dcf7d494223041c029cc4fa325cb513fe99bf989e6895a1de357f1eb/envyaml-1.10.211231-py2.py3-none-any.whl", hash = "sha256:8d7a7a6be12587cc5da32a587067506b47b849f4643981099ad148015a72de52", size = 8138, upload-time = "2022-01-08T10:56:38.849Z" },
-]
-
-[[package]]
 name = "exceptiongroup"
 version = "1.3.1"
 source = { registry = "https://pypi.org/simple" }
@@ -471,24 +447,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/b5/fe/997687a931ab51049acce6fa1f23e8f01216374ea81374ddee763c493db5/filelock-3.29.0.tar.gz", hash = "sha256:69974355e960702e789734cb4871f884ea6fe50bd8404051a3530bc07809cf90", size = 57571, upload-time = "2026-04-19T15:39:10.068Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/81/47/dd9a212ef6e343a6857485ffe25bba537304f1913bdbed446a23f7f592e1/filelock-3.29.0-py3-none-any.whl", hash = "sha256:96f5f6344709aa1572bbf631c640e4ebeeb519e08da902c39a001882f30ac258", size = 39812, upload-time = "2026-04-19T15:39:08.752Z" },
-]
-
-[[package]]
-name = "gast"
-version = "0.6.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/3c/14/c566f5ca00c115db7725263408ff952b8ae6d6a4e792ef9c84e77d9af7a1/gast-0.6.0.tar.gz", hash = "sha256:88fc5300d32c7ac6ca7b515310862f71e6fdf2c029bbec7c66c0f5dd47b6b1fb", size = 27708, upload-time = "2024-06-27T20:31:49.527Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/a3/61/8001b38461d751cd1a0c3a6ae84346796a5758123f3ed97a1b121dfbf4f3/gast-0.6.0-py3-none-any.whl", hash = "sha256:52b182313f7330389f72b069ba00f174cfe2a06411099547288839c6cbafbd54", size = 21173, upload-time = "2024-07-09T13:15:15.615Z" },
-]
-
-[[package]]
-name = "geoarrow-types"
-version = "0.3.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/a5/97/fa35f5d13a803b8f16e59c1f18f06607b9df5683c08bd7cd7a48a29ce988/geoarrow_types-0.3.0.tar.gz", hash = "sha256:82243e4be88b268fa978ae5bba6c6680c3556735e795965b2fe3e6fbfea9f9ee", size = 23708, upload-time = "2025-05-27T03:39:39.979Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/b6/16/e37cb1b0894c9cf3f9b1c50ebcfab56a0d9fe7c3b6f97d5680a7eb27ca08/geoarrow_types-0.3.0-py3-none-any.whl", hash = "sha256:439df6101632080442beccc7393cac54d6c7f6965da897554349e94d2492f613", size = 19025, upload-time = "2025-05-27T03:39:38.652Z" },
 ]
 
 [[package]]
@@ -1157,15 +1115,6 @@ wheels = [
 ]
 
 [[package]]
-name = "ply"
-version = "3.11"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/e5/69/882ee5c9d017149285cab114ebeab373308ef0f874fcdac9beb90e0ac4da/ply-3.11.tar.gz", hash = "sha256:00c7c1aaa88358b9c765b6d3000c6eec0ba42abca5351b095321aef446081da3", size = 159130, upload-time = "2018-02-15T19:01:31.097Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/a3/58/35da89ee790598a0700ea49b2a66594140f44dec458c07e8e3d4979137fc/ply-3.11-py2.py3-none-any.whl", hash = "sha256:096f9b8350b65ebd2fd1346b12452efe5b9607f7482813ffca50c22722a807ce", size = 49567, upload-time = "2018-02-15T19:01:27.172Z" },
-]
-
-[[package]]
 name = "pre-commit"
 version = "4.6.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1410,23 +1359,6 @@ wheels = [
 ]
 
 [[package]]
-name = "pythran"
-version = "0.18.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "beniget" },
-    { name = "gast" },
-    { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
-    { name = "numpy", version = "2.4.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
-    { name = "ply" },
-    { name = "setuptools" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/d4/84/17c4c44a24f5ec709991e603e601bf316d09c4fe915fbe348c689dede998/pythran-0.18.1.tar.gz", hash = "sha256:8803ed948bf841a11bbbb10472a8ff6ea24ebd70e67c3f77b77be3db900eccfe", size = 2406997, upload-time = "2025-11-15T15:36:54.097Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/2d/25/d608f4a0a4bc3dfad40af2cdb5b92d16b907c3e0a29ff0ab6003740c63ea/pythran-0.18.1-py3-none-any.whl", hash = "sha256:e1d811a5843d1881f8adcc3944fe3b84c7317ebf4530617829c19c9836f18b49", size = 4350276, upload-time = "2025-11-15T15:36:51.442Z" },
-]
-
-[[package]]
 name = "pytz"
 version = "2026.2"
 source = { registry = "https://pypi.org/simple" }
@@ -1596,7 +1528,7 @@ test = [
 requires-dist = [
     { name = "boring-semantic-layer", specifier = ">=0.3.14" },
     { name = "click", specifier = ">=8.3.1" },
-    { name = "xorq", specifier = ">=0.3.27" },
+    { name = "xorq", specifier = ">=0.3.28" },
 ]
 
 [package.metadata.requires-dev]
@@ -1611,15 +1543,6 @@ test = [
     { name = "ipython", specifier = ">=8.38.0" },
     { name = "pytest", specifier = ">=9.0.2" },
     { name = "pytest-cov", specifier = ">=7.0.0" },
-]
-
-[[package]]
-name = "setuptools"
-version = "82.0.1"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/4f/db/cfac1baf10650ab4d1c111714410d2fbb77ac5a616db26775db562c8fab2/setuptools-82.0.1.tar.gz", hash = "sha256:7d872682c5d01cfde07da7bccc7b65469d3dca203318515ada1de5eda35efbf9", size = 1152316, upload-time = "2026-03-09T12:47:17.221Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/9d/76/f789f7a86709c6b087c5a2f52f911838cad707cc613162401badc665acfe/setuptools-82.0.1-py3-none-any.whl", hash = "sha256:a59e362652f08dcd477c78bb6e7bd9d80a7995bc73ce773050228a348ce2e5bb", size = 1006223, upload-time = "2026-03-09T12:47:15.026Z" },
 ]
 
 [[package]]
@@ -1853,7 +1776,7 @@ wheels = [
 
 [[package]]
 name = "xorq"
-version = "0.3.27"
+version = "0.3.28"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "atpublic" },
@@ -1862,9 +1785,7 @@ dependencies = [
     { name = "click" },
     { name = "cloudpickle" },
     { name = "cryptography" },
-    { name = "envyaml" },
     { name = "filelock" },
-    { name = "geoarrow-types" },
     { name = "git-annex" },
     { name = "gitpython" },
     { name = "opentelemetry-exporter-otlp" },
@@ -1878,7 +1799,6 @@ dependencies = [
     { name = "pyarrow" },
     { name = "pyarrow-hotfix" },
     { name = "python-dateutil" },
-    { name = "pythran", marker = "sys_platform == 'darwin'" },
     { name = "pytz" },
     { name = "rich" },
     { name = "sqlglot" },
@@ -1892,9 +1812,9 @@ dependencies = [
     { name = "xorq-dasher" },
     { name = "xorq-datafusion" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a8/8f/bbfedfebe15b5667c557d3927475a2377eb5cc9d3d0f941d9ac8f3e0b032/xorq-0.3.27.tar.gz", hash = "sha256:5842d77507b2c4c0dd3f70e59bb075b33b88b088a185d820ae0699ae10f2ed48", size = 1789989, upload-time = "2026-05-27T04:23:46.947Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b8/65/885a92815175fadcdd4a2f4a6ac0dc5ed9b7263ac247b0dd731845f9b853/xorq-0.3.28.tar.gz", hash = "sha256:a625694f985e03d598c42dd8116a99df134ab3c3fafaba2eb058d69e48e05b7c", size = 1803187, upload-time = "2026-06-02T12:38:25.92Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/79/b8/83834739a626a00eeab638f3b74c40f5dbc08551fac3f6936d0ab1cebcdb/xorq-0.3.27-py3-none-any.whl", hash = "sha256:828e7e1c81b619982b79a059a8619d9825d8c3fcd05a4af62d64e1070872a157", size = 1715719, upload-time = "2026-05-27T04:23:48.989Z" },
+    { url = "https://files.pythonhosted.org/packages/69/96/fb6de6655f0dd8ce2f09319b3dbdb9cb104c47498d2d30c7d296ea413835/xorq-0.3.28-py3-none-any.whl", hash = "sha256:197470c31ae4f2abc2ddc69534ea6cc13f02fe42820b62bf4a800c49cf5c3314", size = 1718779, upload-time = "2026-06-02T12:38:23.315Z" },
 ]
 
 [[package]]

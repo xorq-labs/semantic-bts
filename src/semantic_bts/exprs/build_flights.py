@@ -192,7 +192,13 @@ def fetch_bts_months(df_in):
                 )
 
     frames = []
-    for year_month in df_in["year_months"]:
+    year_months = [
+        part.strip()
+        for cell in df_in["year_months"]
+        for part in str(cell).split(",")
+        if part.strip()
+    ]
+    for year_month in year_months:
         ys, ms = year_month.split("_", 1)
         year, month = int(ys), int(ms)
         df_m = fetch_one(year_month)
@@ -230,7 +236,18 @@ def fetch_bts_months(df_in):
 
 con = xo.connect()
 
-months_memtable = xo.memtable({"year_months": ["2025_11", "2025_12"]})
+# Deferred, comma-delimited month range re-pointable at execution time via
+# params={"year_months": ...}; the default preserves the original range.
+# The coalesce is a hash-time workaround for xorq-labs/xorq#2037: the dasher's
+# content-hash replaces a NamedScalarParameter with an aliased literal
+# placeholder, and a Project rejects a bare Alias as a column value. Wrapping
+# the param keeps the Alias nested as an argument instead. The "" fallback is
+# inert (the param always resolves non-null). Remove once #2037 is fixed.
+months_input = xo.memtable({"_": [0]}).select(
+    year_months=xo.coalesce(
+        xo.param("year_months", "string", default="2025_11,2025_12"), ""
+    )
+)
 
 schema_in = xo.schema({"year_months": "string"})
 schema_out = xo.schema(
@@ -352,7 +369,7 @@ schema_out = xo.schema(
 )
 
 source_expr = flight_udxf(
-    months_memtable,
+    months_input,
     process_df=fetch_bts_months,
     maybe_schema_in=schema_in,
     maybe_schema_out=schema_out,
