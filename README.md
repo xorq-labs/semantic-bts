@@ -133,23 +133,24 @@ treated as a pristine starting point.
 
 ### CLI
 
-The `semantic-bts` command is on your `$PATH` inside `nix develop`, or after
-`uv sync` + activating the venv (`pip install -e .` works too):
+This package demonstrates xorq, so use `xorq` directly for catalog operations —
+listing entries, inspecting schemas, running expressions, the TUI, etc.:
 
 ```bash
-semantic-bts list            # show catalog entries (alias, kind)
-semantic-bts list-exprs      # show Python-importable expression names
-semantic-bts show ALIAS      # show schema and metadata for an entry
-semantic-bts run ALIAS       # execute an expression and print first rows
-semantic-bts run ALIAS -n 20 # limit output to 20 rows
-semantic-bts run flights --year-months 2025_10,2025_11  # re-point the month range
-semantic-bts rebuild         # wipe + rebuild the submodule catalog
+xorq catalog -p xorq-catalog-bts list
+xorq catalog -p xorq-catalog-bts show flights
+xorq catalog -p xorq-catalog-bts run flights -o - -f json --limit 5
+xorq catalog -p xorq-catalog-bts tui
 ```
 
-> These are thin shorthands over `xorq catalog -p xorq-catalog-bts ...`
-> (`list-exprs` is package-specific). **`rebuild` is the only command with no
-> `xorq` equivalent.** For everything else (`tui`, `add`, `remove`) use
-> `xorq` directly.
+The `semantic-bts` command ships exactly one project-specific command with no
+`xorq` equivalent — `rebuild`, which wipes the submodule catalog and rebuilds
+every entry from `src/exprs/`. It's on your `$PATH` inside `nix develop`, or
+after `uv sync` + activating the venv (`pip install -e .` works too):
+
+```bash
+semantic-bts rebuild         # wipe + rebuild the submodule catalog
+```
 
 ### Python API
 
