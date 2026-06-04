@@ -11,13 +11,15 @@ suite (no marker filter), so they execute there.
 from __future__ import annotations
 
 import pytest
+from xorq.catalog.catalog import Catalog
 
-from semantic_bts.api import ENTRIES, load
+from semantic_bts.api import ENTRIES, SUBMODULE_PATH
 
 
 @pytest.mark.scripts
 @pytest.mark.parametrize("entry", ENTRIES, ids=lambda e: e.alias)
 def test_entry_count_positive(entry):
     """Every cataloged table has rows once executed end-to-end."""
-    n = load(entry.alias).count().execute()
+    handle = Catalog.from_repo_path(str(SUBMODULE_PATH)).load(entry.alias)
+    n = handle.count().execute()
     assert n > 0, f"{entry.alias} produced 0 rows"
