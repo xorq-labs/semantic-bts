@@ -11,18 +11,22 @@ from __future__ import annotations
 import pytest
 from xorq.catalog.catalog import Catalog
 
-from semantic_bts.api import _ALIAS_MAP, ENTRIES, catalog, get_exprs, load
+from semantic_bts.api import ENTRIES, SUBMODULE_PATH, get_exprs
+
+
+def _load(alias):
+    return Catalog.from_repo_path(str(SUBMODULE_PATH)).load(alias)
 
 
 @pytest.mark.core
 def test_catalog_opens():
-    assert isinstance(catalog(), Catalog)
+    assert isinstance(Catalog.from_repo_path(str(SUBMODULE_PATH)), Catalog)
 
 
 @pytest.mark.core
 @pytest.mark.parametrize("entry", ENTRIES, ids=lambda e: e.alias)
 def test_entry_loadable(entry):
-    handle = load(entry.alias)
+    handle = _load(entry.alias)
     assert handle is not None
     # every cataloged entry exposes a schema
     assert hasattr(handle, "schema")
@@ -31,7 +35,7 @@ def test_entry_loadable(entry):
 
 @pytest.mark.core
 def test_flights_schema_has_provenance():
-    schema = load("flights").schema()
+    schema = _load("flights").schema()
     names = set(schema.names)
     # BTS canonical columns
     assert {"Year", "Quarter", "Month", "FlightDate", "Reporting_Airline"} <= names
@@ -47,7 +51,7 @@ def test_flights_schema_has_provenance():
 
 @pytest.mark.core
 def test_semantic_model_surface():
-    builder = load("semantic-flights").ls.builder
+    builder = _load("semantic-flights").ls.builder
     dims = set(builder.dimensions)
     measures = set(builder.measures)
     # spot-check each dimension group
@@ -81,7 +85,7 @@ def test_semantic_model_surface():
     ],
 )
 def test_aggregate_schemas(alias, expected_cols):
-    assert expected_cols <= set(load(alias).schema().names)
+    assert expected_cols <= set(_load(alias).schema().names)
 
 
 @pytest.mark.core
@@ -94,21 +98,9 @@ def test_get_exprs_returns_all():
 
 
 @pytest.mark.core
-@pytest.mark.parametrize("py_name,alias", list(_ALIAS_MAP.items()))
-def test_lazy_import(py_name, alias):
-    import semantic_bts.api as api
-
-    handle = getattr(api, py_name)
-    assert handle is not None
-    assert hasattr(handle, "schema")
-    assert len(handle.schema().names) > 0
-
-
-@pytest.mark.core
 def test_package_reexport():
     import semantic_bts
 
-    assert hasattr(semantic_bts, "catalog")
-    assert hasattr(semantic_bts, "load")
+    assert hasattr(semantic_bts, "rebuild")
     assert hasattr(semantic_bts, "get_exprs")
-    assert hasattr(semantic_bts, "flights")
+    assert hasattr(semantic_bts, "ENTRIES")

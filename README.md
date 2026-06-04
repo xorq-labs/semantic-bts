@@ -154,24 +154,29 @@ semantic-bts rebuild         # wipe + rebuild the submodule catalog
 
 ### Python API
 
-Expressions are available as lazy imports, with no catalog IO until you access one:
+Loading an entry is plain xorq — open the pinned catalog and `load` an alias:
 
 ```python
-from semantic_bts import flights, get_exprs, load
+from xorq.catalog.catalog import Catalog
+from semantic_bts import SUBMODULE_PATH
 
-# lazy attribute access
-flights.schema()
-flights.limit(5).to_pandas()
+cat = Catalog.from_repo_path(str(SUBMODULE_PATH))
 
-# load by alias
-load("flights-by-quarter-carrier").limit(10).to_pandas()
+cat.load("flights").limit(5).to_pandas()
+cat.load("flights-by-quarter-carrier").limit(10).to_pandas()
 
 # re-point the deferred year_months param at execution time
-load("flights").to_pandas(params={"year_months": "2025_10,2025_11"})
+cat.load("flights").to_pandas(params={"year_months": "2025_10,2025_11"})
+```
 
-# get all expressions as a dict
+The only package-specific helper is `get_exprs`, which loads every shipped
+entry at once (the project-specific `rebuild` lives here too):
+
+```python
+from semantic_bts import get_exprs
+
 exprs = get_exprs()  # {"flights": <expr>, "semantic-flights": <expr>, ...}
-exprs["flights"] 
+exprs["flights"]
 ```
 
 ## Sharing the catalog with others (optional)
