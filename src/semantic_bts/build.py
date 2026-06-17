@@ -57,22 +57,10 @@ ENTRIES: tuple[Entry, ...] = (
         "expr_dow_deststate",
     ),
     # join examples: protection against the classic BI join traps
-    # (depend on flights + carriers + airports being catalogued first)
-    Entry(
-        "flights-enriched-carrier-airport",
-        EXPRS_DIR / "build_chasm_fanout.py",
-        "expr_enriched",
-    ),
-    Entry(
-        "carrier-budget-fanout",
-        EXPRS_DIR / "build_chasm_fanout.py",
-        "expr_fanout",
-    ),
-    Entry(
-        "carrier-flights-incidents-chasm",
-        EXPRS_DIR / "build_chasm_fanout.py",
-        "expr_chasm",
-    ),
+    # (depend on semantic-flights being catalogued first)
+    Entry("flights-join-safe", EXPRS_DIR / "build_chasm_fanout.py", "expr_safe"),
+    Entry("flights-join-fanout", EXPRS_DIR / "build_chasm_fanout.py", "expr_fanout"),
+    Entry("flights-join-chasm", EXPRS_DIR / "build_chasm_fanout.py", "expr_chasm"),
 )
 
 

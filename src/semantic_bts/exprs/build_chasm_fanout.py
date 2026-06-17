@@ -9,24 +9,29 @@ measures the examples don't need, and a freshly-scoped model keeps the join keys
 and prefixes clean). Three top-level expression bindings, each catalogued as its
 own entry:
 
-  expr_enriched  -- join_one: flights enriched with real carrier/airport NAMES
-                    (the flights CSV carries only codes). Each flight maps to
-                    exactly one carrier and one origin airport, so join_one does
-                    NOT fan out — row count and measures stay correct. This is
-                    the "safe join" baseline.
+  expr_safe (alias `flights-join-safe`)
+      SAFE join_one. flights.join_one(carriers).join_one(airports), grouped by
+      carrier_name + origin airport_name, aggregating n_flights / avg_dep_delay
+      / avg_arr_delay. Each flight maps to exactly one carrier and one airport,
+      so join_one does NOT fan out — the row count and measures stay correct,
+      and the join adds the real NAMES the flights CSV lacks (it carries only
+      codes). The baseline that shows a join can be safe.
 
-  expr_fanout    -- join_many FAN-OUT: a one-row-per-carrier parent fact
-                    (`carrier_budget`, additive `monthly_budget`) joined to the
-                    many individual flights. A naive SQL join would repeat the
-                    budget once per flight and inflate SUM(monthly_budget); BSL
-                    pre-aggregates the parent at its own grain, so the total
-                    stays correct.
+  expr_fanout (alias `flights-join-fanout`)
+      FAN-OUT trap, protected. carrier_budget.join_many(flights) grouped by
+      carrier_code, aggregating carrier_budget.total_budget + flights.n_flights.
+      The additive parent measure (`monthly_budget`) sits on the one-side; a
+      naive SQL join repeats it once per child flight and inflates
+      SUM(monthly_budget). BSL pre-aggregates the parent at its own grain, so
+      total_budget stays correct (2000/carrier) regardless of flight count.
 
-  expr_chasm     -- join_many CHASM: two many-arms off the carrier dimension
-                    (flights AND `carrier_incidents`). A naive join produces the
-                    flights x incidents cross-product per carrier, inflating BOTH
-                    SUM(n_flights) and SUM(cost); BSL aggregates each arm on its
-                    own raw table, so both totals stay correct.
+  expr_chasm (alias `flights-join-chasm`)
+      CHASM trap, protected. carrier_spine.join_many(flights).join_many(
+      carrier_incidents), grouped by carrier_code, aggregating flights.n_flights
+      + carrier_incidents.total_cost. Two independent many-arms off the carrier
+      dimension; a naive join forms the flights x incidents cross-product per
+      carrier, inflating BOTH sums. BSL aggregates each arm on its own raw
+      table, so both totals stay correct.
 
 Everything is kept on the `semantic-flights` model's own (single) backend so the
 build artifacts round-trip through `xorq catalog run`: the contrived facts are
@@ -42,7 +47,7 @@ L_AIRPORT_ID, the same data as the `carriers`/`airports` source entries). The
 — but only as a dynamically generated, randomly-named download, unfit for a
 reproducible catalog UDXF, so contrived facts stand in here.)
 
-Top-level bindings: expr_enriched, expr_fanout, expr_chasm
+Top-level bindings: expr_safe, expr_fanout, expr_chasm
 """
 
 import xorq.api as xo
@@ -176,8 +181,8 @@ carrier_incidents = SemanticModel(
     measures={"total_cost": Measure(expr=lambda t: t.cost.sum())},
 )
 
-# --- (1) join_one enrichment (safe many-to-one lookup) ----------------------
-expr_enriched = (
+# --- (1) SAFE: join_one many-to-one lookup (no fan-out) ---------------------
+expr_safe = (
     flights.join_one(carriers, on="carrier_code")
     .join_one(airports, on=lambda f, a: f.OriginAirportID == a.airport_id)
     .group_by("carriers.carrier_name", "airports.airport_name")
