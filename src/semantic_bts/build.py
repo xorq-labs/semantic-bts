@@ -37,6 +37,9 @@ class Entry:
 
 ENTRIES: tuple[Entry, ...] = (
     Entry("flights", EXPRS_DIR / "build_flights.py", "expr"),
+    # dimension/lookup sources (real BTS lookup tables)
+    Entry("carriers", EXPRS_DIR / "build_carriers.py", "expr"),
+    Entry("airports", EXPRS_DIR / "build_airports.py", "expr"),
     Entry("semantic-flights", EXPRS_DIR / "build_semantic_flights.py", "expr"),
     Entry(
         "flights-by-month-od-state",
@@ -53,6 +56,11 @@ ENTRIES: tuple[Entry, ...] = (
         EXPRS_DIR / "build_aggregates.py",
         "expr_dow_deststate",
     ),
+    # join examples: protection against the classic BI join traps
+    # (depend on semantic-flights being catalogued first)
+    Entry("flights-join-safe", EXPRS_DIR / "build_chasm_fanout.py", "expr_safe"),
+    Entry("flights-join-fanout", EXPRS_DIR / "build_chasm_fanout.py", "expr_fanout"),
+    Entry("flights-join-chasm", EXPRS_DIR / "build_chasm_fanout.py", "expr_chasm"),
 )
 
 
